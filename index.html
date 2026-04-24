@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holistic — Benjamin Kase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #06060A;
+  --fg: #F2ECE0;
+  --dim: #9A9081;
+  --dim-soft: #6E675C;
+  --warm: #D4A878;
+  --copper: #C88644;
+  --rust: #B86A48;
+  --teal: #4FA6A6;
+  --gold: #D9B85C;
+  --violet: #8A6FB0;
+  --card-bg: rgba(255,255,255,0.045);
+  --card-border: rgba(255,255,255,0.07);
+  --serif: 'Newsreader', Georgia, serif;
+  --sans: 'Syne', sans-serif;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--sans);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Grain overlay ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px;
+}
+
+/* ── Ambient glows ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle 300px at 82% 12%, rgba(79,166,166,0.04) 0%, transparent 70%),
+    radial-gradient(circle 250px at 15% 88%, rgba(200,134,68,0.035) 0%, transparent 70%);
+}
+
+/* ── Slides container ── */
+.deck {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 7vh 8vw;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.slide.active .stagger { opacity: 0; animation: staggerIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.slide.active .stagger:nth-child(1) { animation-delay: 0.08s; }
+.slide.active .stagger:nth-child(2) { animation-delay: 0.2s; }
+.slide.active .stagger:nth-child(3) { animation-delay: 0.32s; }
+.slide.active .stagger:nth-child(4) { animation-delay: 0.44s; }
+.slide.active .stagger:nth-child(5) { animation-delay: 0.56s; }
+.slide.active .stagger:nth-child(6) { animation-delay: 0.68s; }
+.slide.active .stagger:nth-child(7) { animation-delay: 0.8s; }
+.slide.active .stagger:nth-child(8) { animation-delay: 0.92s; }
+
+@keyframes staggerIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Typography ── */
+.section-label {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 1.6rem;
+}
+
+.heading {
+  font-family: var(--serif);
+  font-weight: 300;
+  line-height: 1.22;
+  margin-bottom: 1.6rem;
+  color: var(--fg);
+}
+
+.body-text {
+  font-family: var(--sans);
+  font-size: 16.5px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--fg);
+  max-width: 900px;
+}
+
+.dim { color: var(--dim); }
+.dim-soft { color: var(--dim-soft); }
+.warm { color: var(--warm); }
+.copper { color: var(--copper); }
+.teal { color: var(--teal); }
+.rust { color: var(--rust); }
+.gold { color: var(--gold); }
+.violet { color: var(--violet); }
+
+/* ── Bulleted slide lists ── */
+.bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 920px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bullets li {
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--fg);
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--warm);
+  opacity: 0.9;
+}
+
+.bullets.teal-dot li::before { background: var(--teal); }
+.bullets.gold-dot li::before { background: var(--gold); }
+.bullets.copper-dot li::before { background: var(--copper); }
+.bullets.rust-dot li::before { background: var(--rust); }
+.bullets.violet-dot li::before { background: var(--violet); }
+
+.bullets li strong {
+  font-weight: 600;
+  color: var(--warm);
+}
+.bullets.teal-dot li strong { color: var(--teal); }
+.bullets.gold-dot li strong { color: var(--gold); }
+.bullets.copper-dot li strong { color: var(--copper); }
+.bullets.rust-dot li strong { color: var(--rust); }
+.bullets.violet-dot li strong { color: var(--violet); }
+
+/* ── Navigation ── */
+.slide-counter {
+  position: fixed;
+  top: 3.2vh;
+  right: 4.5vw;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+  z-index: 100;
+  opacity: 0.85;
+}
+
+.dots {
+  position: fixed;
+  bottom: 3vh;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dim);
+  opacity: 0.35;
+  cursor: pointer;
+  transition: opacity 0.4s, background 0.4s, transform 0.4s;
+}
+
+.dot.active {
+  opacity: 1;
+  background: var(--warm);
+  transform: scale(1.4);
+}
+
+.notes-hint {
+  position: fixed;
+  bottom: 3vh;
+  right: 4.5vw;
+  font-family: var(--sans);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim-soft);
+  z-index: 100;
+  opacity: 0.6;
+}
+
+/* ── SLIDE: Title ── */
+.slide-title {
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.title-silhouette {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(320px, 42vw, 580px);
+  height: auto;
+  opacity: 0.22;
+  z-index: 0;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 78%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 35%, rgba(0,0,0,0) 78%);
+  filter: contrast(1.1);
+}
+
+.title-silhouette img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.slide-title > *:not(.title-silhouette):not(.title-footer) {
+  position: relative;
+  z-index: 1;
+}
+
+.slide-title .section-label {
+  color: var(--dim);
+}
+
+.title-wordmark {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(52px, 9vw, 92px);
+  color: var(--warm);
+  line-height: 1.1;
+  margin-bottom: 1.8rem;
+}
+
+.title-subtitle {
+  font-family: var(--sans);
+  font-size: clamp(15px, 1.5vw, 19px);
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--fg);
+  max-width: 640px;
+  opacity: 0.92;
+}
+
+.title-footer {
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+  opacity: 0.8;
+  z-index: 2;
+}
+
+/* ── SLIDE: Archaeology (visual) ── */
+.archaeology {
+  display: flex;
+  flex-direction: column;
+  gap: 3.2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.arch-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.arch-label {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+}
+
+/* AI Timeline visual */
+.timeline {
+  position: relative;
+  padding: 1.4rem 0 0.6rem;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(1.4rem + 6px);
+  height: 1px;
+  background: linear-gradient(to right,
+    rgba(217,184,92,0.1) 0%,
+    rgba(217,184,92,0.35) 50%,
+    rgba(217,184,92,0.1) 100%);
+}
+
+.timeline-points {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: relative;
+}
+
+.tp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  gap: 0.6rem;
+  position: relative;
+}
+
+.tp-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--dim);
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px rgba(217,184,92,0.35);
+  margin-top: 0;
+}
+
+.tp.peak .tp-dot {
+  width: 18px;
+  height: 18px;
+  background: var(--gold);
+  box-shadow: 0 0 20px rgba(217,184,92,0.55), 0 0 0 1px var(--gold);
+  margin-top: -3px;
+}
+
+.tp-year {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--fg);
+}
+
+.tp.peak .tp-year {
+  color: var(--gold);
+}
+
+.tp-label {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--dim);
+  text-align: center;
+  line-height: 1.4;
+  max-width: 100px;
+}
+
+.tp.peak .tp-label {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.arch-caption {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--fg);
+  opacity: 0.85;
+  line-height: 1.5;
+  margin-top: 0.4rem;
+}
+
+/* Design Lineage visual */
+.lineage {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.lineage-step {
+  flex: 1;
+  min-width: 0;
+  padding: 1rem 1.1rem;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  transition: transform 0.3s, border-color 0.3s;
+}
+
+.lineage-step .step-name {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--fg);
+}
+
+.lineage-step .step-note {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--dim);
+  line-height: 1.4;
+}
+
+.lineage-step.pluriversal {
+  background: rgba(217,184,92,0.08);
+  border: 1px solid rgba(217,184,92,0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 20px rgba(217,184,92,0.1);
+}
+
+.lineage-step.pluriversal .step-name {
+  color: var(--gold);
+}
+
+.lineage-arrow {
+  color: var(--dim-soft);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ── SLIDE: The Object ── */
+.slide-object-layout {
+  display: flex;
+  align-items: center;
+  gap: 6vw;
+  max-width: 1150px;
+}
+
+.capsule-image-wrap {
+  flex: 0 0 auto;
+  width: clamp(170px, 19vw, 230px);
+}
+
+.capsule-image-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 100px;
+  filter: drop-shadow(0 0 40px rgba(79,166,166,0.22)) drop-shadow(0 0 80px rgba(79,166,166,0.08));
+}
+
+.object-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.object-text .heading {
+  font-size: clamp(24px, 2.8vw, 34px);
+  color: var(--fg);
+}
+
+.tech-note {
+  font-style: italic;
+  color: var(--copper);
+  font-size: 14.5px;
+  line-height: 1.6;
+  margin-top: 1.1rem;
+  opacity: 0.95;
+  max-width: 760px;
+}
+
+/* ── SLIDE: Nanobots ── */
+.nanobot-row {
+  display: flex;
+  justify-content: center;
+  gap: clamp(14px, 2.2vw, 30px);
+  margin: 2.2rem 0 2rem;
+  flex-wrap: wrap;
+}
+
+.nanobot-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.nanobot-item img {
+  width: clamp(110px, 13vw, 162px);
+  height: clamp(110px, 13vw, 162px);
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--card-border);
+}
+
+.nanobot-label {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--fg);
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.nanobot-label span {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--dim);
+  margin-top: 3px;
+  letter-spacing: 0.06em;
+  text-transform: none;
+}
+
+.swarm-caption {
+  text-align: center;
+  font-size: 15.5px;
+  color: var(--fg);
+  line-height: 1.7;
+  max-width: 760px;
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
+/* ── SLIDE: The App ── */
+.app-row {
+  display: flex;
+  justify-content: center;
+  gap: clamp(20px, 3vw, 44px);
+  margin: 2rem 0 1.8rem;
+  flex-wrap: wrap;
+}
+
+.phone-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.phone-frame img {
+  width: clamp(140px, 16vw, 195px);
+  height: auto;
+  border-radius: 22px;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+
+.phone-label {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  text-align: center;
+  max-width: 190px;
+  line-height: 1.5;
+  opacity: 0.88;
+}
+
+.demo-cue {
+  text-align: center;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 19px;
+  color: var(--copper);
+  margin-top: 0.8rem;
+}
+
+/* ── SLIDE: Paradox — numbered journey ── */
+.journey {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 1000px;
+}
+
+.journey-step {
+  display: flex;
+  gap: 1.4rem;
+  align-items: flex-start;
+  padding: 0.4rem 0;
+}
+
+.step-num {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 34px;
+  color: var(--dim-soft);
+  line-height: 1;
+  min-width: 3.2rem;
+  flex-shrink: 0;
+}
+
+.journey-step.s1 .step-num { color: var(--warm); }
+.journey-step.s2 .step-num { color: var(--teal); }
+.journey-step.s3 .step-num { color: var(--gold); }
+.journey-step.s4 .step-num { color: var(--copper); }
+
+.step-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.step-title {
+  font-family: var(--sans);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--fg);
+}
+
+.journey-step.s1 .step-title { color: var(--warm); }
+.journey-step.s2 .step-title { color: var(--teal); }
+.journey-step.s3 .step-title { color: var(--gold); }
+.journey-step.s4 .step-title { color: var(--copper); }
+
+.step-sub {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--fg);
+  opacity: 0.82;
+}
+
+/* ── SLIDE: Question cards ── */
+.question-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 880px;
+}
+
+.question-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 1.3rem 1.7rem;
+}
+
+.question-card .body-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--fg);
+}
+
+.card-label {
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--violet);
+  margin-bottom: 0.6rem;
+}
+
+/* ── SLIDE: Close ── */
+.slide-close {
+  align-items: center;
+  text-align: center;
+}
+
+.close-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1.45;
+  color: var(--fg);
+  max-width: 760px;
+  margin-bottom: 2rem;
+}
+
+.close-answer {
+  font-family: var(--sans);
+  font-size: 16px;
+  color: var(--fg);
+  line-height: 1.7;
+  max-width: 560px;
+  margin-bottom: 3rem;
+  opacity: 0.85;
+}
+
+.close-footer {
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+  opacity: 0.8;
+}
+
+/* ── Placeholder for missing images ── */
+.img-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(255,255,255,0.08);
+  border-radius: 10px;
+  color: var(--dim);
+  font-family: var(--sans);
+  font-size: 11px;
+  text-align: center;
+  padding: 12px;
+}
+
+/* ── Presenter notes ── */
+.speaker-notes { display: none; }
+
+body.notes-visible .slide.active .speaker-notes {
+  display: block;
+  position: fixed;
+  left: 4vw;
+  right: 4vw;
+  bottom: 7vh;
+  max-height: 32vh;
+  overflow-y: auto;
+  padding: 1.2rem 1.5rem;
+  background: rgba(12,12,18,0.92);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--fg);
+  z-index: 80;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+body.notes-visible .speaker-notes::before {
+  content: 'SPEAKER NOTES';
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--warm);
+  margin-bottom: 0.7rem;
+}
+</style>
+</head>
+<body>
+
+<div class="slide-counter"><span id="counter">1 / 8</span></div>
+<div class="notes-hint">Press N for notes</div>
+<div class="dots" id="dots"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ═══════════════════ SLIDE 1: TITLE ═══════════════════ -->
+  <div class="slide slide-title active" data-index="0">
+    <div class="title-silhouette">
+      <img src="Dark_silhouette_of_a_human_fig_Nano_Banana_68496.jpg" alt=""
+           onerror="this.parentElement.style.display='none';">
+    </div>
+    <div class="section-label stagger dim">Trojan Horse / MacGuffin Project Critique</div>
+    <div class="title-wordmark stagger">Holistic</div>
+    <p class="title-subtitle stagger">When an AI knows your complete physiological state, does it set you free — or does it become the most intimate form of surveillance ever created?</p>
+    <div class="title-footer stagger">Benjamin Kase · Art Center College of Design · April 2026</div>
+    <div class="speaker-notes">
+      Holistic is a Trojan Horse project. On the surface it's a wellness device — a capsule you swallow. What it actually does is force a question: when an AI has complete physiological access to a body, does that set you free, or does it become the most intimate form of surveillance ever created? That's the question I'm sitting with tonight.
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SLIDE 2: ARCHAEOLOGY ═══════════════════ -->
+  <div class="slide" data-index="1">
+    <div class="section-label stagger gold">Archaeology</div>
+    <div class="heading stagger" style="font-size: clamp(24px, 2.8vw, 34px); max-width: 900px;">Two histories converge here.</div>
+
+    <div class="archaeology">
+      <div class="arch-section stagger">
+        <div class="arch-label">AI Timeline</div>
+        <div class="timeline">
+          <div class="timeline-line"></div>
+          <div class="timeline-points">
+            <div class="tp"><div class="tp-dot"></div><div class="tp-year">1956</div><div class="tp-label">Dartmouth coins "AI"</div></div>
+            <div class="tp"><div class="tp-dot"></div><div class="tp-year">1997</div><div class="tp-label">Deep Blue</div></div>
+            <div class="tp"><div class="tp-dot"></div><div class="tp-year">2011</div><div class="tp-label">Siri</div></div>
+            <div class="tp"><div class="tp-dot"></div><div class="tp-year">2017</div><div class="tp-label">Transformer</div></div>
+            <div class="tp peak"><div class="tp-dot"></div><div class="tp-year">2022</div><div class="tp-label">ChatGPT · 100M users in 2 months</div></div>
+            <div class="tp"><div class="tp-dot"></div><div class="tp-year">2024</div><div class="tp-label">On-device AI in consumer hardware</div></div>
+          </div>
+        </div>
+        <p class="arch-caption">The technology scaled. The epistemology didn't.</p>
+      </div>
+
+      <div class="arch-section stagger">
+        <div class="arch-label">Design Lineage</div>
+        <div class="lineage">
+          <div class="lineage-step">
+            <div class="step-name">User-centered</div>
+            <div class="step-note">assumes a generic user</div>
+          </div>
+          <div class="lineage-arrow">→</div>
+          <div class="lineage-step">
+            <div class="step-name">Participatory</div>
+            <div class="step-note">same table, same shape</div>
+          </div>
+          <div class="lineage-arrow">→</div>
+          <div class="lineage-step">
+            <div class="step-name">Co-design</div>
+            <div class="step-note">single ontological frame</div>
+          </div>
+          <div class="lineage-arrow">→</div>
+          <div class="lineage-step pluriversal">
+            <div class="step-name">Pluriversal</div>
+            <div class="step-note">question the frame itself</div>
+          </div>
+        </div>
+        <p class="arch-caption">Escobar · Fry · Willis — Holistic sits at this edge.</p>
+      </div>
+    </div>
+
+    <div class="speaker-notes">
+      Two histories converge here. The AI timeline — from Dartmouth in '56 through transformers and ChatGPT. Every leap promised personalization and delivered the same universal model to every user. ChatGPT hit 100 million users in two months — the fastest adoption of any consumer technology in history. But the epistemology, whose ways of knowing count, didn't scale with it. On the design side: user-centered assumed a generic user. Participatory invited users to the table but kept the shape. Co-design shared authorship inside a single frame. Pluriversal design — Escobar, Fry, Willis — asks what if the frame itself is the problem? That's the edge Holistic sits on.
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SLIDE 3: THE PARADOX ═══════════════════ -->
+  <div class="slide" data-index="2">
+    <div class="section-label stagger rust">The Paradox</div>
+    <div class="heading stagger" style="font-size: clamp(24px, 2.6vw, 32px); max-width: 960px;">How the project found its real question.</div>
+    <div class="journey">
+      <div class="journey-step s1 stagger">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <div class="step-title">Life OS — self-report wellness app</div>
+          <div class="step-sub">Worked as demo. Wrong model — forces epistemology into pre-chosen categories.</div>
+        </div>
+      </div>
+      <div class="journey-step s2 stagger">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <div class="step-title">Fair Game · Basu &amp; Das, Cambridge 2025</div>
+          <div class="step-sub">Auditor-debiasing RL loop. Adapted: audit for <em>epistemological</em> bias, not demographic.</div>
+        </div>
+      </div>
+      <div class="journey-step s3 stagger">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <div class="step-title">Ingestible BCI — observe, don't ask</div>
+          <div class="step-sub">Three days of body data beats any questionnaire. Interaction shifts from typing to thinking.</div>
+        </div>
+      </div>
+      <div class="journey-step s4 stagger">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <div class="step-title">Trojan Horse — wellness device, real question</div>
+          <div class="step-sub">Whose model of intelligence, health, and flourishing gets encoded in the architecture?</div>
+        </div>
+      </div>
+    </div>
+    <div class="speaker-notes">
+      I started with a wellness app called Life OS — onboarding flow where users self-reported their energy, values, thinking style. It worked as a demo but the model was wrong: you're forcing self-knowledge into categories the system picked. Then I found the Fair Game paper — Basu and Das, Cambridge 2025 — an auditor-debiasing RL loop that monitors AI for bias. I adapted it for epistemological bias, not demographic. But self-reported data is still shallow. What if the AI didn't need you to describe yourself at all? An ingestible BCI that observes your body for three days builds a richer, more honest profile. Interaction shifts from typing to thinking. And that's the Trojan Horse — the capsule looks like wellness, but it forces the real question: whose model of intelligence, health, and flourishing gets encoded?
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SLIDE 4: THE OBJECT ═══════════════════ -->
+  <div class="slide" data-index="3">
+    <div class="section-label stagger copper">The Object</div>
+    <div class="slide-object-layout">
+      <div class="capsule-image-wrap stagger">
+        <img src="Pharmaceutical_capsule_in_916__Nano_Banana_83711.jpg" alt="Holistic capsule filled with nanobots"
+             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'img-placeholder\' style=\'width:200px;height:340px\'>holistic-capsule.jpg</div>';">
+      </div>
+      <div class="object-text">
+        <div class="heading stagger">Swallow a capsule. Three days later, the AI knows you completely.</div>
+        <ul class="bullets copper-dot stagger">
+          <li><strong>7.7 million nanobots</strong> — seven body systems, continuous monitoring</li>
+          <li><strong>Not step counts.</strong> The complete reality of being in this body, right now</li>
+          <li><strong>Thought-dialogue</strong> — you think, the AI responds; phone is the window, not the UI</li>
+        </ul>
+        <p class="tech-note stagger">Grounded in real research: FDA ingestible sensors · MIT galvanic cells · ETH Zurich microrobots in pig vasculature · Synchron endovascular BCI (zero adverse events, n=10).</p>
+      </div>
+    </div>
+    <div class="speaker-notes">
+      You swallow a capsule. Within three days the AI knows you completely. 7.7 million nanobots disperse through every body system — nervous, cardiovascular, respiratory, endocrine, digestive, immune, musculoskeletal. Not step counts, not heart rate snapshots — the complete reality of what it feels like to be in this body right now. You think, and the AI responds through a neural interface. The phone app is a window into your data, not the primary interaction. And all of it is grounded in real research — FDA ingestible sensors, MIT galvanic cells, ETH Zurich microrobots in pig vasculature, Synchron's endovascular BCI with zero adverse events across ten patients.
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SLIDE 5: THE SWARM ═══════════════════ -->
+  <div class="slide" data-index="4">
+    <div class="section-label stagger teal">The Swarm</div>
+    <div class="heading stagger" style="font-size: clamp(24px, 2.8vw, 34px); text-align:center;">Five nanobots. Seven systems. One continuous portrait.</div>
+    <div class="nanobot-row stagger">
+      <div class="nanobot-item">
+        <img src="Nanobot-Neural.jpg" alt="Neural nanobot SEM render"
+             onerror="this.outerHTML='<div class=\'img-placeholder\' style=\'width:140px;height:140px\'>nanobot-neural.jpg</div>';">
+        <div class="nanobot-label">Neural<span>200nm</span></div>
+      </div>
+      <div class="nanobot-item">
+        <img src="Nanobot-Cardiovascular.jpg" alt="Cardiovascular nanobot SEM render"
+             onerror="this.outerHTML='<div class=\'img-placeholder\' style=\'width:140px;height:140px\'>nanobot-cardiovascular.jpg</div>';">
+        <div class="nanobot-label">Cardiovascular<span>150nm</span></div>
+      </div>
+      <div class="nanobot-item">
+        <img src="Nanobot-Endocrine.jpg" alt="Endocrine nanobot SEM render"
+             onerror="this.outerHTML='<div class=\'img-placeholder\' style=\'width:140px;height:140px\'>nanobot-endocrine.jpg</div>';">
+        <div class="nanobot-label">Endocrine<span>100nm</span></div>
+      </div>
+      <div class="nanobot-item">
+        <img src="Nanobot-Immune.jpg" alt="Immune nanobot SEM render"
+             onerror="this.outerHTML='<div class=\'img-placeholder\' style=\'width:140px;height:140px\'>nanobot-immune.jpg</div>';">
+        <div class="nanobot-label">Immune<span>80nm</span></div>
+      </div>
+      <div class="nanobot-item">
+        <img src="Nanobot-Muskulalskeletal.jpg" alt="Musculoskeletal nanobot SEM render"
+             onerror="this.outerHTML='<div class=\'img-placeholder\' style=\'width:140px;height:140px\'>nanobot-musculoskeletal.jpg</div>';">
+        <div class="nanobot-label">Musculoskeletal<span>250nm</span></div>
+      </div>
+    </div>
+    <p class="swarm-caption stagger">Each navigates, anchors, monitors. The capsule is the seed. The body becomes the network.</p>
+    <div class="speaker-notes">
+      Five types, seven systems, one continuous portrait. Each nanobot is sized for the tissue it lives in — neural bots the largest at 200nm, immune bots the smallest at 80nm so they can move through capillaries. Each navigates to its target system, anchors, and begins continuous monitoring. The capsule is the seed. The body becomes the network. After three days, seeding is complete and the system is fully resolved.
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SLIDE 6: THE INTERFACE ═══════════════════ -->
+  <div class="slide" data-index="5">
+    <div class="section-label stagger warm">The Interface</div>
+    <div class="heading stagger" style="font-size: clamp(24px, 2.8vw, 34px); text-align:center;">The app shows what the capsule data becomes.</div>
+    <div class="app-row stagger">
+      <div class="phone-frame">
+        <img src="Live-view.png" alt="Live view screenshot"
+             onerror="this.outerHTML='<div class=\'img-placeholder\' style=\'width:180px;height:360px\'>screenshot-live.png</div>';">
+        <div class="phone-label">Live · Real-time body state</div>
+      </div>
+      <div class="phone-frame">
+        <img src="Historical-view.png" alt="Historical view screenshot"
+             onerror="this.outerHTML='<div class=\'img-placeholder\' style=\'width:180px;height:360px\'>screenshot-historical.png</div>';">
+        <div class="phone-label">Historical · Auto-detected epistemology</div>
+      </div>
+      <div class="phone-frame">
+        <img src="Prediction-view.png" alt="Predictions view screenshot"
+             onerror="this.outerHTML='<div class=\'img-placeholder\' style=\'width:180px;height:360px\'>screenshot-predictions.png</div>';">
+        <div class="phone-label">Predictions · Cross-system synthesis</div>
+      </div>
+    </div>
+    <div class="demo-cue stagger">Let me show you.</div>
+    <div class="speaker-notes">
+      The app is where the capsule's data becomes something you can see. Live view — real-time body state, neural link active. Historical — your epistemological profile, auto-detected from three days of observation. Predictions — cross-system synthesis with confidence scoring. The phone is intentionally secondary. The primary interaction is thought-dialogue through the neural interface. The app is the dashboard. Let me walk through the live demo.
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SLIDE 7: OPEN QUESTIONS ═══════════════════ -->
+  <div class="slide" data-index="6">
+    <div class="section-label stagger violet">Open Questions</div>
+    <div class="heading stagger" style="font-size: clamp(24px, 2.6vw, 32px); max-width: 880px;">What this work is still sitting with.</div>
+    <div class="question-cards">
+      <div class="question-card stagger">
+        <div class="card-label">Individual vs. Communal</div>
+        <p class="body-text">If epistemology is inherently social, how does a personal system honor communal knowledge-making?</p>
+      </div>
+      <div class="question-card stagger">
+        <div class="card-label">The Consent Problem</div>
+        <p class="body-text">When the device is inside your body, what does "opt out" mean? No framework covers continuous full-body monitoring.</p>
+      </div>
+      <div class="question-card stagger">
+        <div class="card-label">The Classification Tension</div>
+        <p class="body-text">The app categorizes how you think. Is that liberation — or reduction?</p>
+      </div>
+    </div>
+    <div class="speaker-notes">
+      Three things the work is still sitting with. First — individual versus communal. Both Afrofuturism and Escobar argue epistemology is inherently social. Holistic is a personal system. How does personal intelligence honor communal knowledge-making? Second — the consent problem. When the device is inside your body, what does "opt out" even mean? Three U.S. states protect neural data; none address continuous full-body monitoring. Third — the classification tension. The app literally categorizes how you think — Analytical 35%, Intuitive 28%. Is a machine classifying your relationship with knowledge itself an act of liberation, or an act of reduction? I don't have settled answers.
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SLIDE 8: CLOSE ═══════════════════ -->
+  <div class="slide slide-close" data-index="7">
+    <p class="close-quote stagger">The capsule appears to be a wellness device. What it actually does is force the question: in the age of AI, who gets to know you — and on whose terms?</p>
+    <p class="close-answer stagger">The answer depends entirely on whose values are encoded in the architecture.</p>
+    <div class="close-footer stagger">Benjamin Kase · Holistic · People. Environments. Society. · April 2026</div>
+    <div class="speaker-notes">
+      Close with the question, not an answer. The capsule appears to be a wellness device. What it actually does is force the question into the room — in the age of AI, who gets to know you, and on whose terms? The answer depends entirely on whose values are encoded in the architecture. Thank you. Open to critique.
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', (e) => { e.stopPropagation(); goTo(i); });
+    dotsContainer.appendChild(d);
+  }
+
+  function goTo(n) {
+    if (n < 0 || n >= total || n === current) return;
+    slides[current].classList.remove('active');
+    dotsContainer.children[current].classList.remove('active');
+    current = n;
+    slides[current].querySelectorAll('.stagger').forEach(el => {
+      el.style.animation = 'none';
+      el.offsetHeight;
+      el.style.animation = '';
+    });
+    slides[current].classList.add('active');
+    dotsContainer.children[current].classList.add('active');
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      goTo(current + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      goTo(current - 1);
+    } else if (e.key === 'n' || e.key === 'N') {
+      e.preventDefault();
+      document.body.classList.toggle('notes-visible');
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.dots')) return;
+    if (e.target.closest('.speaker-notes')) return;
+    const x = e.clientX / window.innerWidth;
+    if (x > 0.5) goTo(current + 1);
+    else goTo(current - 1);
+  });
+})();
+</script>
+</body>
+</html>
